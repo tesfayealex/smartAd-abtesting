@@ -188,7 +188,7 @@ class CleanDataFrame:
         df = self.drop_duplicates(df)
         df = self.drop_unresponsive(df)
         df = self.date_to_day(df)
-        df = self.convert_to_brands(df)
+        # df = self.convert_to_brands(df)
         df = self.merge_response_columns(df)
         df = self.drop_columns(df)
         df.reset_index(drop=True, inplace=True)

@@ -13,8 +13,10 @@ from sklearn.metrics import (accuracy_score,
                              log_loss,
                              precision_score,
                              recall_score)
+import pandas as pd
 
 import mlflow
+import dvc.api
 import time
 
 from Scripts.cleaning import CleanDataFrame
@@ -65,7 +67,7 @@ class TrainingPipeline(Pipeline):
                     mlflow.log_param(name, run_params[name])
             for name in run_metrics:
                 mlflow.log_metric(name, run_metrics[name])
-            
+
             mlflow.log_param("columns", X_test.columns.to_list())
         model_name = self.make_model_name(experiment_name, run_name)
         mlflow.sklearn.log_model(
@@ -81,7 +83,7 @@ def get_pipeline(model, x):
         x)   # Remove the target column
 
     categorical_transformer = Pipeline(steps=[
-        ('onehot', OneHotEncoder(handle_unknown='ignore', max_categories=15))
+        ('onehot', OneHotEncoder(handle_unknown='ignore')) #, max_categories=15
     ])
     numerical_transformer = Pipeline(steps=[
         ('scale', StandardScaler())
@@ -117,4 +119,9 @@ def run_train_pipeline(model, x, y, experiment_name, run_name):
                                                         random_state=123)
     run_params = model.get_params()
     train_pipeline.fit(X_train, y_train)
-    return train_pipeline.log_model('model', X_test, y_test, experiment_name, run_name, run_params=run_params)
+    train_pipeline.log_model('model', X_test, y_test,
+                             experiment_name, run_name, run_params=run_params)
+    return train_pipeline
+
+
+
